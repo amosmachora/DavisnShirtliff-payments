@@ -13,13 +13,19 @@ const Page = ({
   searchParams: { plan: "basic" | "premium" | "custom", source: string };
 }) => {
   const plan = searchParams.plan;
+  const user_id = searchParams.user_id;
+  const source = searchParams.source;
 
   return (
     <main
       className={`${poppins.className} flex px-[5%] flex-col md:flex-row md:h-screen`}
     >
-      <PaymentLeft plan={plan} source={searchParams.source}/>
-      <PaymentRight plan={plan} />
+      <PaymentLeft plan={plan as unknown as "basic"} />
+      <PaymentRight
+        plan={plan as unknown as "basic"}
+        userId={user_id as unknown as string}
+        source={source as unknown as ""}
+      />
     </main>
   );
 };

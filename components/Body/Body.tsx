@@ -30,7 +30,7 @@ const features2 = [
   }
 ]
 
-const Body = ({ source }: { source: string }) => {
+const Body = ({ source, userId }: { source: string; userId: string }) => {
   return (
     <div className="">
       <h2 className="text-[3rem] font-semibold text-center mt-10">
@@ -83,7 +83,7 @@ const Body = ({ source }: { source: string }) => {
           </div>
           <Link
             className="mt-5 text-white font-extrabold bg-blueCustom flex rounded py-3 px-4 justify-between hover:bg-opacity-70 transition-all text-sm duration-300 items-center"
-            href={`/subscribe?plan=premium&source=${source}`}
+            href={`/subscribe?plan=premium&user_id=${userId}&source=${source}`}
           >
             <p>Get Started</p>
             <Image src={Images.next} alt="next-icon" width={25} />
@@ -111,7 +111,7 @@ const Body = ({ source }: { source: string }) => {
           </div>
           <Link
             className="mt-5 text-white font-extrabold bg-blueCustom flex rounded py-3 px-4 justify-between hover:bg-opacity-70 transition-all text-sm duration-300 items-center"
-            href={`/subscribe?plan=custom&source=${source}`}
+            href={`/subscribe?plan=custom&user_id=${userId}&source=${source}`}
           >
             <p>Get Started</p>
             <Image src={Images.next} alt="next-icon" width={25} />
