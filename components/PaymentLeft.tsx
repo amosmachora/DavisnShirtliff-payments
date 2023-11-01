@@ -1,30 +1,58 @@
 "use client";
 
-import React, { useState } from "react";
-import Logo from "../public/Davis.png";
-import Image from "next/image";
-import { Poppins } from "next/font/google";
-import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Images } from "@/constants";
 import {
   basicFeatures,
   basicPrice,
   premiumFeatures,
   premiumPrice,
 } from "@/utils/utils";
+import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Image from "next/image";
+import { useState } from "react";
 import { Customizer } from "./Customizer";
+
+const features2 = [
+  {
+    service: "solar-calc",
+    basic: ["Access to SUNFLO systems", "3 trials for other sizing tools"],
+    premium: [
+      "AC Borehole Pumps",
+      "Eazy AC Sizing",
+      "SUNFLO Systems",
+      "Solarization (Electric to Solar)",
+      "Solar Pumps",
+      "Projects",
+      "Customers"
+    ],
+    custom: ["Solar Calc Premium", "Pump Calc Premium"],
+  },
+  {
+    service: "pump-calc",
+    basic: ["Access to Pumps Catalogue", "3 trials for other tools"],
+    premium: [
+      "Pump Sizing",
+      "DRO configuratior",
+    ],
+    custom: ["Solar Calc Premium", "Pump Calc Premium"],
+  }
+]
+
 
 export const PaymentLeft = ({
   plan,
+  source,
 }: {
   plan: "basic" | "premium" | "custom";
+  source: string
 }) => {
   const [features, setFeatures] = useState<null | string[]>(
     plan === "basic"
       ? basicFeatures
       : plan === "premium"
-      ? premiumFeatures
-      : null
+        ? premiumFeatures
+        : null
   );
 
   const [customPrice, setCustomPrice] = useState(0);
@@ -32,26 +60,25 @@ export const PaymentLeft = ({
   return (
     <div className="py-[5%] md:w-1/2 relative flex flex-col justify-between">
       <div>
-        <div className="flex items-center">
+        <div className="flex justify-start">
           <Image
-            src={Logo}
+            src={Images.logo}
             alt="Davis and ShirtLiff logo"
-            className="w-10 h-10 mr-5"
+            width={170}
+
           />
-          <p className="font-semibold">Davis & ShirtLiff</p>
         </div>
         <div className="mt-5">
           <p className="text-gray-600 font-semibold capitalize">{plan}</p>
           <p className="text-4xl font-semibold">
             {!features
               ? `$${customPrice}`
-              : `${
-                  plan === "basic"
-                    ? basicPrice
-                    : plan === "premium"
-                    ? premiumPrice
-                    : ""
-                }
+              : `${plan === "basic"
+                ? basicPrice
+                : plan === "premium"
+                  ? premiumPrice
+                  : ""
+              }
               .00`}
           </p>
         </div>
@@ -64,10 +91,10 @@ export const PaymentLeft = ({
         <p className="font-semibold">
           {plan === "custom" ? "Select Features" : "Features"}
         </p>
-        {!features ? (
+        {plan === "custom" ? (
           <Customizer setCustomPrice={setCustomPrice} />
         ) : (
-          features?.map((feature, i) => (
+          features2.filter(item => item.service === source)[0].premium.map((feature, i) => (
             <div className="flex items-center mt-3" key={i}>
               <FontAwesomeIcon
                 icon={faCircleCheck}

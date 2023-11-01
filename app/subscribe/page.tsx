@@ -10,7 +10,7 @@ const Page = ({
   searchParams,
 }: {
   params: { slug: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: { plan: "basic" | "premium" | "custom", source: string };
 }) => {
   const plan = searchParams.plan;
   const user_id = searchParams.user_id;
