@@ -22,3 +22,5 @@ export const hardCodedFeatures = [
     price: 20,
   },
 ];
+
+export const customizableFeatures = ["solarcalc", "pumpcalc"];
