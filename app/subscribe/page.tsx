@@ -10,7 +10,7 @@ const Page = ({
   searchParams,
 }: {
   params: { slug: string };
-  searchParams: { plan: "basic" | "premium" | "custom", source: string };
+  searchParams: { [key: string]: string | string[] | undefined };
 }) => {
   const plan = searchParams.plan;
   const user_id = searchParams.user_id;
@@ -20,7 +20,10 @@ const Page = ({
     <main
       className={`${poppins.className} flex px-[5%] flex-col md:flex-row md:h-screen`}
     >
-      <PaymentLeft plan={plan as unknown as "basic"} />
+      <PaymentLeft
+        plan={plan as unknown as "basic"}
+        source={source as unknown as "solar-calc"}
+      />
       <PaymentRight
         plan={plan as unknown as "basic"}
         userId={user_id as unknown as string}

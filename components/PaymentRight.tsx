@@ -10,6 +10,14 @@ import mpesa from "../public/mpesa.png";
 import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import axios from "axios";
 
+function formatNumber(arg0: string) {
+  if (arg0?.toString().startsWith("+254")) {
+    return arg0.toString().replace("+254", "0");
+  }
+
+  return arg0?.toString();
+}
+
 export const PaymentRight = ({
   plan,
   userId,
@@ -21,23 +29,25 @@ export const PaymentRight = ({
 }) => {
   const [countries, setCountries] = useState<Country[] | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<"card" | "mpesa">("card");
+  const [email, setEmail] = useState<string | null>(null);
+  const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
 
   const config = {
     public_key: process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY!,
     tx_ref: Date.now().toString(),
     amount: 100,
-    currency: "NGN",
-    payment_options: "card",
+    currency: "KES",
+    payment_options: paymentMethod === "card" ? "card" : "card,mobilemoney",
     payment_plan: "3341",
     customer: {
-      email: "user@gmail.com",
-      phone_number: "070********",
+      email: email!,
+      phone_number: formatNumber(phoneNumber!),
       name: "john doe",
     },
     meta: { consumer_id: "7898", consumer_mac: "kjs9s8ss7dd" },
     customizations: {
-      title: "my Payment Title",
-      description: "Payment for items in cart",
+      title: `${plan} ${source}`,
+      description: `Payment for ${source} ${plan}`,
       logo: "https://st2.depositphotos.com/4403291/7418/v/450/depositphotos_74189661-stock-illustration-online-shop-log.jpg",
     },
   };
@@ -50,14 +60,6 @@ export const PaymentRight = ({
       .catch((err) => console.log(err));
   }, []);
 
-  function formatNumber(arg0: FormDataEntryValue | null) {
-    if (arg0?.toString().startsWith("+254")) {
-      return arg0.toString().replace("+254", "0");
-    }
-
-    return arg0?.toString();
-  }
-
   const [paymentLink, setPaymentLink] = useState<string | null>(null);
 
   return (
@@ -65,56 +67,56 @@ export const PaymentRight = ({
       className="py-[5%] px-[5%] md:w-1/2 shadow"
       onSubmit={(e) => {
         e.preventDefault();
-        // handleFlutterPayment({
-        //   callback: (response) => {
-        //     console.log(response);
-        //     closePaymentModal(); // this will close the modal programmatically
-        //   },
-        //   onClose: () => {},
-        // });
+        handleFlutterPayment({
+          callback: (response) => {
+            console.log(response);
+            closePaymentModal(); // this will close the modal programmatically
+          },
+          onClose: () => {},
+        });
 
         const formData = new FormData(e.target as HTMLFormElement);
 
-        const initialRequestData = {
-          user_id: userId,
-          email: formData.get("email"),
-          country: formData.get("country"),
-          phone: formatNumber(formData.get("phone")),
-          sub_type: plan.charAt(0) + plan.substring(1),
-          price: plan !== "custom" ? 100 : 50,
-          sub_prod:
-            plan === "custom"
-              ? ["SolarCalc", "PumpCalc"]
-              : [
-                  source
-                    .split("-")
-                    .map(
-                      (str) => str.charAt(0).toUpperCase() + str.substring(1)
-                    )
-                    .join(""),
-                ],
-        };
+        // const initialRequestData = {
+        //   user_id: userId,
+        //   email: formData.get("email"),
+        //   country: formData.get("country"),
+        //   phone: formatNumber(formData.get("phone")),
+        //   sub_type: plan.charAt(0) + plan.substring(1),
+        //   price: plan !== "custom" ? 100 : 50,
+        //   sub_prod:
+        //     plan === "custom"
+        //       ? ["SolarCalc", "PumpCalc"]
+        //       : [
+        //           source
+        //             .split("-")
+        //             .map(
+        //               (str) => str.charAt(0).toUpperCase() + str.substring(1)
+        //             )
+        //             .join(""),
+        //         ],
+        // };
 
-        console.log(JSON.stringify(initialRequestData));
+        // console.log(JSON.stringify(initialRequestData));
 
-        fetch("http://144.126.194.173/api/subscribe", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(initialRequestData),
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-          })
-          .then((data) => {
-            console.log(data);
-            setPaymentLink(data.payment_link);
-          })
-          .catch((error) => console.error("Error:", error));
+        // fetch("http://144.126.194.173/api/subscribe", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify(initialRequestData),
+        // })
+        //   .then((response) => {
+        //     if (!response.ok) {
+        //       throw new Error(`HTTP error! Status: ${response.status}`);
+        //     }
+        //     return response.json();
+        //   })
+        //   .then((data) => {
+        //     console.log(data);
+        //     setPaymentLink(data.payment_link);
+        //   })
+        //   .catch((error) => console.error("Error:", error));
       }}
     >
       <p className="font-semibold">Please input your information</p>
@@ -124,6 +126,8 @@ export const PaymentRight = ({
           type="email"
           className="w-full py-2 px-3 rounded-md border shadow mt-1"
           name="email"
+          onChange={(e) => setEmail(e.target.value)}
+          required
         />
       </div>
       <div className="w-full">
@@ -147,6 +151,7 @@ export const PaymentRight = ({
           placeholder="0719428019"
           required
           name="phone"
+          onChange={(e) => setPhoneNumber(e.target.value)}
         />
       </div>
       {paymentLink && (
@@ -155,64 +160,35 @@ export const PaymentRight = ({
         </a>
       )}
       <div>
-        {/* <p className="font-semibold my-5">Payment method</p> */}
-        {/* <div className="flex gap-x-4">
+        <p className="font-semibold my-5">Payment method</p>
+        <div className="flex gap-x-4">
           <div
-            className="p-5 rounded border border-black w-1/3 cursor-pointer hover:bg-gray-100 transition-all"
+            className={`p-5 rounded w-1/3 cursor-pointer hover:bg-gray-100 transition-all ${
+              paymentMethod === "card"
+                ? "outline-blue-500 outline"
+                : "border border-black"
+            }`}
             onClick={() => setPaymentMethod("card")}
           >
             <FontAwesomeIcon icon={faCreditCard} />
             <p className="font-semibold">Card</p>
           </div>
           <div
-            className="p-5 rounded border border-black w-1/3 cursor-pointer hover:bg-gray-100 transition-all"
+            className={`p-5 rounded w-1/3 cursor-pointer hover:bg-gray-100 transition-all ${
+              paymentMethod === "mpesa"
+                ? "outline-blue-500 outline"
+                : "border border-black"
+            }`}
             onClick={() => setPaymentMethod("mpesa")}
           >
             <Image src={mpesa} className="h-5 w-5" alt={"M-pesa"} />
             <p className="font-semibold">M-pesa</p>
           </div>
         </div>
-        {paymentMethod === "card" ? (
-          <div>
-            <p className="text-gray-500 text-sm mb-1 mt-3">Card Information</p>
-            <input
-              type="number"
-              className="w-full p-2 border-gray-300 rounded-t border placeholder:text-sm"
-              placeholder="1234 1234 1234 1234"
-              // required
-            />
-            <div className="flex">
-              <input
-                type="text"
-                className="border-gray-300 border-b border-l p-2 w-1/2 rounded-bl placeholder:text-sm"
-                placeholder="MM / YY"
-                // required
-              />
-              <input
-                type="number"
-                className="border-gray-300 border-b border-l border-r p-2 w-1/2 rounded-br placeholder:text-sm"
-                placeholder="CVC"
-                // required
-              />
-            </div>
-          </div>
-        ) : (
-          <div>
-            <p className="text-gray-500 text-sm mb-1 mt-3">
-              Input your phone number
-            </p>
-            <input
-              type="number"
-              className="w-full p-2 border-gray-300 rounded-t border placeholder:text-sm"
-              placeholder="254719428019"
-              // required
-            />
-          </div>
-        )}
         <div className="flex gap-x-2 items-center mt-5">
           <input type="checkbox" defaultChecked className="h-5 w-5" />
           <p className="text-sm">You agree to the terms of service</p>
-        </div> */}
+        </div>
         <button
           type="submit"
           className="mt-5 text-center text-white bg-blue-500 text-sm w-full rounded py-3 hover:bg-opacity-70 transition-all"
@@ -227,3 +203,7 @@ export const PaymentRight = ({
     </form>
   );
 };
+
+// 4187427415564246;
+// cvv 828;
+// date 09 / 32;

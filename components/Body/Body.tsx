@@ -3,32 +3,7 @@ import { Images } from "@/constants";
 import Image from "next/image";
 import Link from "next/link";
 import "./Body.scss";
-
-const features2 = [
-  {
-    service: "solar-calc",
-    basic: ["Access to SUNFLO systems", "3 trials for other sizing tools"],
-    premium: [
-      "AC Borehole Pumps",
-      "Eazy AC Sizing",
-      "SUNFLO Systems",
-      "Solarization (Electric to Solar)",
-      "Solar Pumps",
-      "Projects",
-      "Customers"
-    ],
-    custom: ["Solar Calc Premium", "Pump Calc Premium"],
-  },
-  {
-    service: "pump-calc",
-    basic: ["Access to Pumps Catalogue", "3 trials for other tools"],
-    premium: [
-      "Pump Sizing",
-      "DRO configuratior",
-    ],
-    custom: ["Solar Calc Premium", "Pump Calc Premium"],
-  }
-]
+import { hardCodedFeatures } from "@/utils/utils";
 
 const Body = ({ source, userId }: { source: string; userId: string }) => {
   return (
@@ -45,11 +20,14 @@ const Body = ({ source, userId }: { source: string; userId: string }) => {
             <p className="text-3xl font-extrabold my-2">$0</p>
             <p className="text-md font-medium">Your current plan</p>
             <ul className="list-none flex flex-col gap-2 mt-10">
-              {features2.filter(item => item.service === source)[0].basic.map((item, index) => (
-                <li key={index} className="flex place-items-center gap-x-3">
-                  <Image src={Images.check} height={18} alt="check-icon" /> {item}
-                </li>
-              ))}
+              {hardCodedFeatures
+                .filter((item) => item.service === source)[0]
+                .basic.map((item, index) => (
+                  <li key={index} className="flex place-items-center gap-x-3">
+                    <Image src={Images.check} height={18} alt="check-icon" />{" "}
+                    {item}
+                  </li>
+                ))}
             </ul>
           </div>
           <a
@@ -74,11 +52,14 @@ const Body = ({ source, userId }: { source: string; userId: string }) => {
             </p>
             <p className="text-md font-medium">Everything premium</p>
             <ul className="list-none flex flex-col gap-2 mt-10">
-              {features2.filter(item => item.service === source)[0].premium.map((item, index) => (
-                <li key={index} className="flex place-items-center gap-3">
-                  <Image src={Images.check} height={18} alt="check-icon" /> {item}
-                </li>
-              ))}
+              {hardCodedFeatures
+                .filter((item) => item.service === source)[0]
+                .premium.map((item, index) => (
+                  <li key={index} className="flex place-items-center gap-3">
+                    <Image src={Images.check} height={18} alt="check-icon" />{" "}
+                    {item}
+                  </li>
+                ))}
             </ul>
           </div>
           <Link
@@ -102,11 +83,14 @@ const Body = ({ source, userId }: { source: string; userId: string }) => {
               Need more than {source.replace("-", " ")}?
             </p>
             <ul className="list-none flex flex-col gap-2 mt-10">
-              {features2.filter(item => item.service === source)[0].custom.map((item, index) => (
-                <li key={index} className="flex place-items-center gap-3">
-                  <Image src={Images.check} height={18} alt="check-icon" /> {item}
-                </li>
-              ))}
+              {hardCodedFeatures
+                .filter((item) => item.service === source)[0]
+                .custom.map((item, index) => (
+                  <li key={index} className="flex place-items-center gap-3">
+                    <Image src={Images.check} height={18} alt="check-icon" />{" "}
+                    {item}
+                  </li>
+                ))}
             </ul>
           </div>
           <Link
@@ -118,7 +102,7 @@ const Body = ({ source, userId }: { source: string; userId: string }) => {
           </Link>
         </div>
       </div>
-      <p className="text-gray-500 mt-12 hidden md:block">
+      <p className="text-gray-500 my-12 hidden md:block">
         Powered by <span className="font-semibold">D&S payments</span> | Terms
         Privacy
       </p>

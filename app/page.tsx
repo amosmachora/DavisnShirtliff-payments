@@ -14,7 +14,7 @@ export default function Home({
   console.log({ userId, source });
 
   return (
-    <main className="flex min-h-screen flex-col items-center px-[5%] py-[4%]">
+    <main className="flex min-h-screen flex-col items-center px-[5%] pt-[4%]">
       <Navbar userId={userId as unknown as string} />
       <Body
         source={source as unknown as string}
