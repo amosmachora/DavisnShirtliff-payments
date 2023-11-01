@@ -11,10 +11,15 @@ export default function Home({
   const userId = searchParams.user_id;
   const source = searchParams.source;
 
+  console.log({ userId, source });
+
   return (
     <main className="flex min-h-screen flex-col items-center px-[5%] py-[4%]">
       <Navbar userId={userId as unknown as string} />
-      <Body source={source as unknown as string} />
+      <Body
+        source={source as unknown as string}
+        userId={userId as unknown as string}
+      />
     </main>
   );
 }

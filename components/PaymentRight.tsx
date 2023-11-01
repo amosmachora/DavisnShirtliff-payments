@@ -8,11 +8,16 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import mpesa from "../public/mpesa.png";
 import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
+import axios from "axios";
 
 export const PaymentRight = ({
   plan,
+  userId,
+  source,
 }: {
   plan: "basic" | "premium" | "custom";
+  userId: string;
+  source: string;
 }) => {
   const [countries, setCountries] = useState<Country[] | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<"card" | "mpesa">("card");
@@ -45,6 +50,16 @@ export const PaymentRight = ({
       .catch((err) => console.log(err));
   }, []);
 
+  function formatNumber(arg0: FormDataEntryValue | null) {
+    if (arg0?.toString().startsWith("+254")) {
+      return arg0.toString().replace("+254", "0");
+    }
+
+    return arg0?.toString();
+  }
+
+  const [paymentLink, setPaymentLink] = useState<string | null>(null);
+
   return (
     <form
       className="py-[5%] px-[5%] md:w-1/2 shadow"
@@ -57,6 +72,49 @@ export const PaymentRight = ({
         //   },
         //   onClose: () => {},
         // });
+
+        const formData = new FormData(e.target as HTMLFormElement);
+
+        const initialRequestData = {
+          user_id: userId,
+          email: formData.get("email"),
+          country: formData.get("country"),
+          phone: formatNumber(formData.get("phone")),
+          sub_type: plan.charAt(0) + plan.substring(1),
+          price: plan !== "custom" ? 100 : 50,
+          sub_prod:
+            plan === "custom"
+              ? ["SolarCalc", "PumpCalc"]
+              : [
+                  source
+                    .split("-")
+                    .map(
+                      (str) => str.charAt(0).toUpperCase() + str.substring(1)
+                    )
+                    .join(""),
+                ],
+        };
+
+        console.log(JSON.stringify(initialRequestData));
+
+        fetch("http://144.126.194.173/api/subscribe", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(initialRequestData),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log(data);
+            setPaymentLink(data.payment_link);
+          })
+          .catch((error) => console.error("Error:", error));
       }}
     >
       <p className="font-semibold">Please input your information</p>
@@ -65,16 +123,37 @@ export const PaymentRight = ({
         <input
           type="email"
           className="w-full py-2 px-3 rounded-md border shadow mt-1"
+          name="email"
         />
       </div>
       <div className="w-full">
         <p className="text-gray-500 text-sm mt-5">Country</p>
-        <select className="w-full py-2 px-3 rounded-md border shadow mt-1">
-          {countries?.map((country) => (
-            <option value={country.name.official}>{country.name.common}</option>
-          ))}
+        <select
+          className="w-full py-2 px-3 rounded-md border shadow mt-1"
+          name="country"
+        >
+          {countries
+            ?.sort((a, b) => a.name.common.localeCompare(b.name.common))
+            .map((country) => (
+              <option value={country.name.common}>{country.name.common}</option>
+            ))}
         </select>
       </div>
+      <div>
+        <p className="text-gray-500 text-sm mt-5">Input your phone number</p>
+        <input
+          type="tel"
+          className="w-full py-2 px-3 rounded-md border shadow mt-1"
+          placeholder="0719428019"
+          required
+          name="phone"
+        />
+      </div>
+      {paymentLink && (
+        <a href={paymentLink} className="text-red-500" target="blank">
+          Click on this link to pay
+        </a>
+      )}
       <div>
         {/* <p className="font-semibold my-5">Payment method</p> */}
         {/* <div className="flex gap-x-4">
