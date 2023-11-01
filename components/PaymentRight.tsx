@@ -9,6 +9,7 @@ import React, { useEffect, useState } from "react";
 import mpesa from "../public/mpesa.png";
 import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import axios from "axios";
+import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
 
 function formatNumber(arg0: string) {
   if (arg0?.toString().startsWith("+254")) {
@@ -31,6 +32,7 @@ export const PaymentRight = ({
   const [paymentMethod, setPaymentMethod] = useState<"card" | "mpesa">("card");
   const [email, setEmail] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const config = {
     public_key: process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY!,
@@ -60,63 +62,64 @@ export const PaymentRight = ({
       .catch((err) => console.log(err));
   }, []);
 
-  const [paymentLink, setPaymentLink] = useState<string | null>(null);
-
   return (
     <form
       className="py-[5%] px-[5%] md:w-1/2 shadow"
       onSubmit={(e) => {
         e.preventDefault();
-        handleFlutterPayment({
-          callback: (response) => {
-            console.log(response);
-            closePaymentModal(); // this will close the modal programmatically
-          },
-          onClose: () => {},
-        });
+        // handleFlutterPayment({
+        //   callback: (response) => {
+        //     console.log(response);
+        //     closePaymentModal(); // this will close the modal programmatically
+        //   },
+        //   onClose: () => {},
+        // });
 
         const formData = new FormData(e.target as HTMLFormElement);
 
-        // const initialRequestData = {
-        //   user_id: userId,
-        //   email: formData.get("email"),
-        //   country: formData.get("country"),
-        //   phone: formatNumber(formData.get("phone")),
-        //   sub_type: plan.charAt(0) + plan.substring(1),
-        //   price: plan !== "custom" ? 100 : 50,
-        //   sub_prod:
-        //     plan === "custom"
-        //       ? ["SolarCalc", "PumpCalc"]
-        //       : [
-        //           source
-        //             .split("-")
-        //             .map(
-        //               (str) => str.charAt(0).toUpperCase() + str.substring(1)
-        //             )
-        //             .join(""),
-        //         ],
-        // };
+        const initialRequestData = {
+          user_id: userId,
+          email: formData.get("email"),
+          country: formData.get("country"),
+          phone: formatNumber(formData.get("phone") as unknown as string),
+          sub_type: plan.charAt(0) + plan.substring(1),
+          price: plan !== "custom" ? 100 : 50,
+          sub_prod:
+            plan === "custom"
+              ? ["SolarCalc", "PumpCalc"]
+              : [
+                  source
+                    .split("-")
+                    .map(
+                      (str) => str.charAt(0).toUpperCase() + str.substring(1)
+                    )
+                    .join(""),
+                ],
+        };
 
-        // console.log(JSON.stringify(initialRequestData));
+        console.log(initialRequestData);
 
-        // fetch("http://144.126.194.173/api/subscribe", {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify(initialRequestData),
-        // })
-        //   .then((response) => {
-        //     if (!response.ok) {
-        //       throw new Error(`HTTP error! Status: ${response.status}`);
-        //     }
-        //     return response.json();
-        //   })
-        //   .then((data) => {
-        //     console.log(data);
-        //     setPaymentLink(data.payment_link);
-        //   })
-        //   .catch((error) => console.error("Error:", error));
+        setIsLoading(true);
+
+        fetch("http://144.126.194.173/api/subscribe", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(initialRequestData),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log(data);
+            window.open(data.payment_link);
+          })
+          .catch((error) => console.error("Error:", error))
+          .finally(() => setIsLoading(false));
       }}
     >
       <p className="font-semibold">Please input your information</p>
@@ -127,6 +130,7 @@ export const PaymentRight = ({
           className="w-full py-2 px-3 rounded-md border shadow mt-1"
           name="email"
           onChange={(e) => setEmail(e.target.value)}
+          placeholder="youremail@somedomain.com"
           required
         />
       </div>
@@ -148,17 +152,12 @@ export const PaymentRight = ({
         <input
           type="tel"
           className="w-full py-2 px-3 rounded-md border shadow mt-1"
-          placeholder="0719428019"
+          placeholder="e.g 0737592044"
           required
           name="phone"
           onChange={(e) => setPhoneNumber(e.target.value)}
         />
       </div>
-      {paymentLink && (
-        <a href={paymentLink} className="text-red-500" target="blank">
-          Click on this link to pay
-        </a>
-      )}
       <div>
         <p className="font-semibold my-5">Payment method</p>
         <div className="flex gap-x-4">
@@ -193,7 +192,11 @@ export const PaymentRight = ({
           type="submit"
           className="mt-5 text-center text-white bg-blue-500 text-sm w-full rounded py-3 hover:bg-opacity-70 transition-all"
         >
-          Subscribe
+          {isLoading ? (
+            <FontAwesomeIcon icon={faCircleNotch} spin />
+          ) : (
+            "Subscribe"
+          )}
         </button>
       </div>
       <p className="text-gray-500 mt-10 md:hidden">
