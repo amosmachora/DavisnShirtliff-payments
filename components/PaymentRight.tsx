@@ -88,7 +88,7 @@ export const PaymentRight = ({
             plan !== "custom"
               ? hardCodedFeatures.find(
                   (feature) => feature.service === source.toLocaleLowerCase()
-                )
+                )!.price * 150
               : 50,
           sub_prod:
             plan === "custom"
@@ -106,6 +106,8 @@ export const PaymentRight = ({
         };
 
         setIsLoading(true);
+
+        console.log(JSON.stringify(initialRequestData));
 
         fetch("/api/subscribe", {
           method: "POST",
