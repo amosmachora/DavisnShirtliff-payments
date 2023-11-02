@@ -99,11 +99,9 @@ export const PaymentRight = ({
           // payment_method: paymentMethod, "card" | "mpesa"
         };
 
-        console.log(JSON.stringify(initialRequestData));
-
         setIsLoading(true);
 
-        fetch("http://144.126.194.173/api/subscribe", {
+        fetch("/api/subscribe", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
