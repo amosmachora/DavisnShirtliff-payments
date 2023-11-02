@@ -11,6 +11,8 @@ import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import axios from "axios";
 import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
 import { hardCodedFeatures } from "@/utils/utils";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 function formatNumber(arg0: string) {
   if (arg0?.toString().startsWith("+254")) {
@@ -63,6 +65,10 @@ export const PaymentRight = ({
       .catch((err) => console.log(err));
   }, []);
 
+  const acceptedCountries = ["Kenya", "Tanzania", "Uganda", "Rwanda", "Zambia"];
+
+  const navigator = useRouter();
+
   return (
     <form
       className="py-[5%] px-[5%] md:w-1/2 shadow"
@@ -107,9 +113,7 @@ export const PaymentRight = ({
 
         setIsLoading(true);
 
-        // console.log(JSON.stringify(initialRequestData));
-
-        console.log("here");
+        console.log(JSON.stringify(initialRequestData));
         fetch("/api/subscribe", {
           method: "POST",
           headers: {
@@ -119,15 +123,43 @@ export const PaymentRight = ({
         })
           .then((response) => {
             if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
+              if (response.status === 400) {
+                toast.success(
+                  `You are already subscribed to ${source.replace(
+                    "-",
+                    " "
+                  )} ${plan}`,
+                  {
+                    icon: "👏",
+                  }
+                );
+                setTimeout(() => {
+                  switch (source) {
+                    case "solar-calc":
+                      window.location.href =
+                        "https://solarcalc.davisandshirtliff.com/";
+                      break;
+                    case "pump-calc":
+                      window.location.href =
+                        "https://pumpcalc.davisandshirtliff.com/";
+                      break;
+                    default:
+                      break;
+                  }
+                }, 2000);
+              } else {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+              }
             }
             return response.json();
           })
           .then((data) => {
-            console.log(data);
-            window.open(data.payment_link, "_blank");
+            // console.log(data);
+            window.open(data.payment_link, "_self");
           })
-          .catch((error) => console.error("Error:", error))
+          .catch((error) => {
+            // console.log(error);
+          })
           .finally(() => setIsLoading(false));
       }}
     >
@@ -151,6 +183,9 @@ export const PaymentRight = ({
           defaultValue={"Kenya"}
         >
           {countries
+            ?.filter((country) =>
+              acceptedCountries.includes(country.name.common)
+            )
             ?.sort((a, b) => a.name.common.localeCompare(b.name.common))
             .map((country) => (
               <option value={country.name.common} key={country.name.common}>
