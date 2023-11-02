@@ -141,6 +141,7 @@ export const PaymentRight = ({
         <select
           className="w-full py-2 px-3 rounded-md border shadow mt-1"
           name="country"
+          defaultValue={"Kenya"}
         >
           {countries
             ?.sort((a, b) => a.name.common.localeCompare(b.name.common))
