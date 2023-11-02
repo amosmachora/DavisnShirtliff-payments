@@ -8,13 +8,16 @@ export default function Home({
   params: { slug: string };
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const userId = searchParams.user_id;
-  const source = searchParams.source;
+  const username = searchParams.username as string;
+  const source = searchParams.source as string;
+  // const subType = searchParams.sub_type as string;
+  // const status = searchParams.status as string;
+
 
   return (
     <main className="flex min-h-screen flex-col items-center px-[5%] py-[4%]">
-      <Navbar userId={userId as unknown as string} />
-      <Body source={source as unknown as string} />
+      <Navbar username={username} />
+      <Body source={source} />
     </main>
   );
 }

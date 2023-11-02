@@ -4,7 +4,7 @@ import Link from "next/link";
 import "./Navbar.scss";
 import Images from "@/constants/Images";
 
-const Navbar = ({ userId }: { userId: string }) => {
+const Navbar = ({  username }: { username: string }) => {
   return (
     <nav className="flex justify-between w-full">
       <Link href="/">
@@ -16,7 +16,7 @@ const Navbar = ({ userId }: { userId: string }) => {
       </Link>
       <div className="flex">
         <h2 className="text-lg">
-          Hello, <span className="text-blue text-bold">User {userId}</span>
+          Hello, <span className="text-blueCustom font-bold">{username}</span>
         </h2>
       </div>
     </nav>
