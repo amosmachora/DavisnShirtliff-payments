@@ -107,8 +107,9 @@ export const PaymentRight = ({
 
         setIsLoading(true);
 
-        console.log(JSON.stringify(initialRequestData));
+        // console.log(JSON.stringify(initialRequestData));
 
+        console.log("here");
         fetch("/api/subscribe", {
           method: "POST",
           headers: {
