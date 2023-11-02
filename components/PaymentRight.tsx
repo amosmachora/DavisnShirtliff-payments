@@ -95,9 +95,11 @@ export const PaymentRight = ({
                     )
                     .join(""),
                 ],
+          from: source,
+          // payment_method: paymentMethod, "card" | "mpesa"
         };
 
-        console.log(initialRequestData);
+        console.log(JSON.stringify(initialRequestData));
 
         setIsLoading(true);
 
@@ -116,7 +118,7 @@ export const PaymentRight = ({
           })
           .then((data) => {
             console.log(data);
-            window.open(data.payment_link);
+            window.open(data.payment_link, "_blank");
           })
           .catch((error) => console.error("Error:", error))
           .finally(() => setIsLoading(false));
@@ -143,7 +145,9 @@ export const PaymentRight = ({
           {countries
             ?.sort((a, b) => a.name.common.localeCompare(b.name.common))
             .map((country) => (
-              <option value={country.name.common}>{country.name.common}</option>
+              <option value={country.name.common} key={country.name.common}>
+                {country.name.common}
+              </option>
             ))}
         </select>
       </div>
