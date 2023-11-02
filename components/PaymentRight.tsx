@@ -10,6 +10,7 @@ import mpesa from "../public/mpesa.png";
 import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import axios from "axios";
 import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
+import { hardCodedFeatures } from "@/utils/utils";
 
 function formatNumber(arg0: string) {
   if (arg0?.toString().startsWith("+254")) {
@@ -83,7 +84,12 @@ export const PaymentRight = ({
           country: formData.get("country"),
           phone: formatNumber(formData.get("phone") as unknown as string),
           sub_type: plan.charAt(0) + plan.substring(1),
-          price: plan !== "custom" ? 100 : 50,
+          price:
+            plan !== "custom"
+              ? hardCodedFeatures.find(
+                  (feature) => feature.service === source.toLocaleLowerCase()
+                )
+              : 50,
           sub_prod:
             plan === "custom"
               ? ["SolarCalc", "PumpCalc"]
