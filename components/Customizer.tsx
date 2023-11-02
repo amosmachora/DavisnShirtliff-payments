@@ -1,5 +1,4 @@
-import { basicFeatures, premiumFeatures } from "@/utils/utils";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { customizableFeatures } from "@/utils/utils";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons/faArrowRight";
 import { faMinus } from "@fortawesome/free-solid-svg-icons/faMinus";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,9 +10,6 @@ export const Customizer = ({
   setCustomPrice: React.Dispatch<React.SetStateAction<number>>;
 }) => {
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
-
-  // const customizableFeatures = premiumFeatures.concat(basicFeatures);
-  const customizableFeatures = ["solarcalc", "pumpcalc"];
 
   return (
     <div className="mt-10 flex gap-x-10">
