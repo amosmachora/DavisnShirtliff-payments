@@ -47,7 +47,7 @@ const Body = ({ source, userId }: { source: string; userId: string }) => {
               {source.replace("-", " ")} Premium
             </h5>
             <p className="text-3xl font-extrabold my-2">
-              $ 10
+              $ {hardCodedFeatures.find((ftr) => ftr.service === source)?.price}
               <span className="text-sm font-light"> per user / per month</span>
             </p>
             <p className="text-md font-medium">Everything premium</p>

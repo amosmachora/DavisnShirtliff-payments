@@ -20,13 +20,13 @@ export const hardCodedFeatures = [
       "Customers",
     ],
     custom: customizableFeatures,
-    price: 10,
+    price: 5,
   },
   {
     service: "pump-calc",
     basic: ["Access to Pumps Catalogue", "3 trials for other tools"],
     premium: ["Pump Sizing", "DRO configuratior"],
     custom: customizableFeatures,
-    price: 20,
+    price: 10,
   },
 ];

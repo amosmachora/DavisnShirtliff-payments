@@ -122,6 +122,7 @@ export const PaymentRight = ({
           body: JSON.stringify(initialRequestData),
         })
           .then((response) => {
+            console.log(response);
             if (!response.ok) {
               if (response.status === 400) {
                 toast.success(
@@ -154,11 +155,10 @@ export const PaymentRight = ({
             return response.json();
           })
           .then((data) => {
-            // console.log(data);
             window.open(data.payment_link, "_self");
           })
           .catch((error) => {
-            // console.log(error);
+            console.log(error);
           })
           .finally(() => setIsLoading(false));
       }}
